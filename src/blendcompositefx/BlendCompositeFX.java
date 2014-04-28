@@ -11,11 +11,13 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,9 +33,8 @@ import javax.imageio.ImageIO;
 public class BlendCompositeFX extends Application {
     private BorderPane root;
     private Group center;
-    private Slider s;
-    private ImageView a;
-    private ImageView b;
+    private ImageView src;
+    private ImageView dst;
     
     @Override
     public void start(Stage stage) {
@@ -52,52 +53,46 @@ public class BlendCompositeFX extends Application {
         blends.valueProperty().addListener((e, old, newVal) ->{setBlendMode(newVal);});
         blends.setValue(BlendMode.values()[0]);
         
-        s = new Slider(0,1,0.01);
-        s.valueProperty().addListener((e,oldVal,newVal) -> {
-            setAlpha(b, newVal.doubleValue());
-        });
+        Slider s = new Slider(0,1,0.01);
+        s.setTooltip(new Tooltip("Adjust opcaity of overlaying image"));
+        s.setValue(1);
+        src.opacityProperty().bind(s.valueProperty());
         
-        Button btn = new Button("Snapshot");
-        btn.setOnAction(e ->{snapshot();});
+        Button snapshot = new Button("Snapshot");
+        snapshot.setOnAction(e ->{snapshot();});
         
-        btm.getChildren().addAll(blends, s, btn);
+        btm.getChildren().addAll(blends, s, snapshot);
         btm.setPadding(new Insets(5));
+        btm.setAlignment(Pos.CENTER);
         
         root.setCenter(center);
         root.setBottom(btm);
-        Scene scene = new Scene(root, 450, 500);
+        Scene scene = new Scene(root, 520, 700);
         
         stage.setScene(scene);
         stage.show();
     }
     
     private void setupCenter(){
-        a = new ImageView(new Image(getClass().getResource("/images/1.png").toExternalForm()));
-        b = new ImageView(new Image(getClass().getResource("/images/2.png").toExternalForm()));
+        src = new ImageView(new Image(getClass().getResource("/images/circle.png").toExternalForm()));
+        dst = new ImageView(new Image(getClass().getResource("/images/bar.png").toExternalForm()));
         
-        a.setPreserveRatio(true);
-        b.setPreserveRatio(true);
+        src.setPreserveRatio(true);
+        dst.setPreserveRatio(true);
         
-        a.setFitWidth(100);
-        b.setFitWidth(100);
+        src.setFitWidth(500);
+        dst.setFitWidth(500);
         
-        a.setX(0);
-        a.setY(0);
-        b.setX(0);
-        b.setY(0);
+        src.setX(0);
+        src.setY(0);
+        dst.setX(0);
+        dst.setY(0);
         
-        setAlpha(b, 0.0);
-        
-        center.getChildren().add(a);
-        center.getChildren().add(b);
-    }
-    
-    private void setAlpha(ImageView wi, double a){
-        wi.setOpacity(a);
+        center.getChildren().addAll(dst,src);
     }
     
     private void setBlendMode(BlendMode newMode){
-        b.setBlendMode(newMode);
+        src.setBlendMode(newMode);
     }
     
     public static void main(String[] args) {
@@ -105,7 +100,7 @@ public class BlendCompositeFX extends Application {
     }
     
     private void snapshot(){
-        Image screen = root.snapshot(null, null);
+        Image screen = center.snapshot(null, null);
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(screen, null), "PNG", new File("output/screens/" + System.currentTimeMillis() + ".png"));
         } catch (IOException ex) {
