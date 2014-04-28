@@ -40,11 +40,9 @@ public class BlendCompositeFX extends Application {
     public void start(Stage stage) {
         root = new BorderPane();
         
-        
         // Center
         center = new Group();
         setupCenter();
-        
         
         // Bottom
         HBox btm = new HBox(5);
@@ -82,11 +80,6 @@ public class BlendCompositeFX extends Application {
         
         src.setFitWidth(500);
         dst.setFitWidth(500);
-        
-        src.setX(0);
-        src.setY(0);
-        dst.setX(0);
-        dst.setY(0);
         
         center.getChildren().addAll(dst,src);
     }
