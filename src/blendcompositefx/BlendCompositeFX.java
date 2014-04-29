@@ -48,8 +48,8 @@ public class BlendCompositeFX extends Application {
         HBox btm = new HBox(5);
         ComboBox<BlendMode> blends = new ComboBox<BlendMode>();
         blends.getItems().setAll(BlendMode.values());
-        blends.valueProperty().addListener((e, old, newVal) ->{setBlendMode(newVal);});
         blends.setValue(BlendMode.values()[0]);
+        src.blendModeProperty().bind(blends.valueProperty());
         
         Slider s = new Slider(0,1,0.01);
         s.setTooltip(new Tooltip("Adjust opcaity of overlaying image"));
@@ -83,11 +83,7 @@ public class BlendCompositeFX extends Application {
         
         center.getChildren().addAll(dst,src);
     }
-    
-    private void setBlendMode(BlendMode newMode){
-        src.setBlendMode(newMode);
-    }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
