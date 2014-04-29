@@ -28,7 +28,7 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author Simon
+ * @author Simon Lissack
  */
 public class BlendCompositeFX extends Application {
     private BorderPane root;
